@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">    
+    <title>Emisiones de CO2</title>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>-->
+    <script src="d3.js" charset="utf-8"></script>
+
+    <style type="text/css">
+      body {
+        background-color: #FFF;
+        font-family: Helvetica;
+      }
+
+
+      .axis path,
+      .axis line {
+        fill:none;
+        stroke:black;
+        shape-rendering:crispEdges;
+      }
+
+      p {
+        font-size: 12px;
+        max-width: 600px;
+      }
+
+      .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+      }
+
+
+      .item-area {     
+        opacity: 0.5;   
+        stroke:none;        
+      }   
+      
+      
+    </style>º
+
+  </head>
+
+
+  <body>
+
+    <h3>Emisiónes de CO2 en <span style="color:steelblue">Estados Unidos</span> y <span style="color:red">China</span></h3>
+    <p>Este gráfico muestra la evolución de emisiones de CO2 en EEUU. Este indicador procede del World Bank Data repository. Source: <a href="http://databank.worldbank.org/data/reports.aspx?source=2&country=&series=EN.ATM.CO2E.KT&period=#">World Bank</a> 2015.</p>
+
+    <script>
+      
+      var widthGraph = 600
+      var heightGraph = 400
+      
+
+      var paddingObject = {
+        top: 20,
+        left:120,
+        bottom:60,
+        right: 20,
+
+      }
+
+
+      var svg = d3.select("body")
+            .append("svg")
+            .attr("width",widthGraph + paddingObject.left + paddingObject.right)
+            .attr("height",heightGraph + paddingObject.top + paddingObject.bottom)
+
+      var dateFormat = d3.time.format("%Y")
+      
+      var xScale = d3.time.scale().range([0,widthGraph])
+
+      var yScale = d3.scale.linear().range([heightGraph,0])
+
+      
+      var xAxisFunction = d3.svg.axis()
+            .scale(xScale)
+            .orient("bottom")
+            .ticks(15)
+            .tickFormat(function(d) {
+              return dateFormat(d)
+            });
+
+      var yAxisFunction = d3.svg.axis()
+          .scale(yScale)
+          .orient("left")
+          .tickFormat(function(d) {
+            return d.toLocaleString()
+          });
+      
+      
+
+      var area = d3.svg.area()
+          .x(function(d) {
+            return paddingObject.left + xScale(dateFormat.parse(d.year))
+          })
+          .y0(function(d) {
+            return paddingObject.top + heightGraph
+          })
+          .y1(function(d) {
+            return paddingObject.top + yScale(d.emissions)
+          })
+
+      var colorScale = d3.scale.ordinal()
+      
+      d3.csv("data/usa_emissions.csv", function(dataFromUSA) {
+        d3.csv("data/china_emissions.csv", function(dataFromCHINA) {
+
+          dataForDomain = dataFromUSA.concat(dataFromCHINA)
+
+          
+          xScale.domain(d3.extent(dataForDomain,function(d,i) { return dateFormat.parse(d.year)}))
+          
+          yScale.domain([0,d3.max(dataForDomain,function(d,i) { return +d.emissions})])
+
+          colorScale.domain(["USA","China"]).range(["steelblue","red"])
+
+          
+            
+            //CHANGED: añadimos un g para cada país (en este caso solo hay uno, EEUU) y añadimos el path y el title.
+            //Ten en cuenta que cada país se corresponde a un item, Como la función .data espera un array de objetos que asociar a cada item es necesario meter los datos obtenidos en un array más ([dataFromCSV]).
+            itemsSource = [
+              {
+                id:"USA",
+                values:dataFromUSA
+              },
+              {
+                id:"China",
+                values:dataFromCHINA
+              }
+            ]
+
+
+            
+            itemAreas = d3.select("svg").selectAll(".item-area").data(itemsSource,function(d) { return d.id})
+
+            //ENTER
+            itemAreasEnter = itemAreas.enter().append("g").attr("class","item-area")
+
+            //CHANGED: Damos color al fill en lugar del stroke
+            itemAreasEnter
+              .append("path")
+              .attr("fill",function(d) {
+                return colorScale(d.id)
+              })
+              .attr("d",function(d) {
+                  return area(d.values);
+                })
+
+
+            itemAreasEnter
+              .append("title")
+              .text(function(d,i) {
+                return d.id
+              })
+
+
+            svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform","translate(" + paddingObject.left + "," + (paddingObject.top + heightGraph + 5) + ")")
+              .call(xAxisFunction)
+
+            svg.append("g")
+              .attr("class", "y axis")
+              .attr("transform","translate(" + (paddingObject.left ) + ","+paddingObject.top+")")
+              .call(yAxisFunction)
+        });
+      });
+    </script>
+
+  </body>
+</html>
+

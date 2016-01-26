@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">    
+    <title>El título de mi página</title>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>-->
+    <script src="d3.js" charset="utf-8"></script>
+
+    <style type="text/css">
+      body {
+        background-color: #EEE
+      }
+
+
+      svg {
+        bac kground-color: #FFF
+      }
+
+      .axis path,
+      .axis line {
+        fill:none;
+        stroke:black;
+        shape-rendering:crispEdges;
+      }
+
+      .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+      }
+    </style>
+
+  </head>
+
+
+  <body>
+
+    <h3>Generate svg objects with d3 using data binding</h3>
+
+    <script>
+
+      var widthGraph = 350
+      var heightGraph = 400
+      
+
+      var paddingObject = {
+        top: 20,
+        left:60,
+        bottom:60,
+        right: 20,
+
+      }
+
+
+      var svg = d3.select("body")
+            .append("svg")
+            .attr("width",widthGraph + paddingObject.left + paddingObject.right)
+            .attr("height",heightGraph + paddingObject.top + paddingObject.bottom)
+
+      var widthBars = d3.scale.linear().range([0,widthGraph])
+
+      var heightBars = d3.scale.ordinal().rangeBands([paddingObject.top,paddingObject.top + heightGraph],0.2)
+
+      var xAxisFunction = d3.svg.axis().scale(widthBars).orient("bottom")
+
+      var yAxisFunction = d3.svg.axis().scale(heightBars).orient("left")
+
+      d3.csv("data/better_life_index_data.csv", function(dataFromCSV) {
+
+          //ORDENAR DATOS
+          dataFromCSV.sort(function(a,b) {
+            return d3.descending(a.lifeSatisfaction,b.lifeSatisfaction);
+          });
+
+          widthBars.domain([0,d3.max(dataFromCSV,function(d,i) { return d.lifeSatisfaction})])
+          heightBars.domain(d3.range(dataFromCSV.length))
+
+          var items = d3.select("svg").selectAll("rect").data(dataFromCSV)          
+
+          //ENTER
+          items.enter().append("rect")
+            .attr("x",paddingObject.left)
+            .attr("y",function(d,i) {
+              return heightBars(i)
+            })
+            .attr("width",function(d) {
+              return widthBars(d.lifeSatisfaction)
+            })
+            .attr("height",heightBars.rangeBand())
+            .append("title")
+            .text(function(d) {
+              return d.country + " Tiene un índice de satisfacción de vida de " + d.lifeSatisfaction
+            });;
+
+
+            svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform","translate(" + paddingObject.left + "," + (paddingObject.top + heightGraph + 5) + ")")
+              .call(xAxisFunction)
+
+            svg.append("g")
+              .attr("class", "y axis")
+              .attr("transform","translate(" + (paddingObject.left - 5) + ",0)")
+              .call(yAxisFunction)
+
+
+
+      });
+    </script>
+
+  </body>
+</html>
+

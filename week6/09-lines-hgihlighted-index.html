@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">    
+    <title>Emisiones de CO2</title>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>-->
+    <script src="d3.js" charset="utf-8"></script>
+
+    <style type="text/css">
+      body {
+        background-color: #FFF;
+        font-family: Helvetica;
+      }
+
+
+      .axis path,
+      .axis line {
+        fill:none;
+        stroke:black;
+        shape-rendering:crispEdges;
+      }
+
+      p {
+        font-size: 12px;
+        max-width: 600px;
+      }
+
+      .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+      }
+
+      /*Define basic color from lines */
+      .item-line {        
+        fill:none;
+        stroke-width:2px;
+        stroke: red;
+      }
+      /*Define special color from lines of american countries*/
+      .item-line path.american {
+        stroke: steelblue;
+      }
+      
+      
+    </style>
+
+  </head>
+
+
+  <body>
+
+    <h3>Emisiónes de CO2 en Estados Unidos</h3>
+    <p>Este gráfico muestra la evolución de emisiones de CO2 en EEUU. Este indicador procede del World Bank Data repository. Source: <a href="http://databank.worldbank.org/data/reports.aspx?source=2&country=&series=EN.ATM.CO2E.KT&period=#">World Bank</a> 2015.</p>
+
+    <script>
+      
+      var widthGraph = 600
+      var heightGraph = 400
+
+      var americanCountries = ["Argentina [ARG]","Bolivia [BOL]","Brazil [BRA]","Chile [CHL]","Colombia [COL]","Costa Rica [CRI]","Cuba [CUB]","Dominican Republic [DOM]","Ecuador [ECU]","El Salvador [SLV]","Guatemala [GTM]","Honduras [HND]","Mexico [MEX]","Nicaragua [NIC]","Panama [PAN]","Paraguay [PRY]","Peru [PER]","Uruguay [URY]","Venezuela, RB [VEN]"]
+
+      var europeanCountries = ["Portugal [PRT]","Spain [ESP]","Italy [ITA]"]
+      
+
+      var paddingObject = {
+        top: 20,
+        left:120,
+        bottom:60,
+        right: 20,
+
+      }
+
+
+      var svg = d3.select("body")
+            .append("svg")
+            .attr("width",widthGraph + paddingObject.left + paddingObject.right)
+            .attr("height",heightGraph + paddingObject.top + paddingObject.bottom)
+
+      var dateFormat = d3.time.format("%Y")
+      
+      var xScale = d3.time.scale().range([0,widthGraph])
+
+      var yScale = d3.scale.linear().range([heightGraph,0])
+
+      
+      var xAxisFunction = d3.svg.axis()
+            .scale(xScale)
+            .orient("bottom")
+            .ticks(15)
+            .tickFormat(function(d) {
+              return dateFormat(d)
+            });
+
+      var yAxisFunction = d3.svg.axis()
+          .scale(yScale)
+          .orient("left")
+          .tickFormat(function(d) {
+            return d.toLocaleString()
+          });
+      
+      
+      var line = d3.svg.line()          
+          .x(function(d) {
+            return paddingObject.left + xScale(dateFormat.parse(d.year))
+          })
+          .y(function(d) {
+            return paddingObject.top + yScale(d.value)
+          })
+      
+      
+      d3.csv("data/world_emissions.csv", function(source) {        
+
+
+        
+       
+        var datasetObject = {}
+        var dataForDomainX = []
+        var dataForDomainY = []
+
+        dataset = source.forEach(function(sourceItem) {          
+          dataForDomainX.push(sourceItem["time"])
+          for (var countryCandidate in sourceItem)
+            if (countryCandidate != "time") {
+              if (datasetObject[countryCandidate] == undefined) {
+                datasetObject[countryCandidate] = []
+              }              
+              dataForDomainY.push(sourceItem[countryCandidate])
+              datasetObject[countryCandidate].push({year:sourceItem["time"],value:sourceItem[countryCandidate]})
+            }
+            
+        })
+        
+
+        var dataset = []
+
+        for (var datasetKey in datasetObject) {
+          dataset.push({id:datasetKey,values:datasetObject[datasetKey]})
+        }        
+        
+        xScale.domain(d3.extent(dataForDomainX,function(d,i) { return dateFormat.parse(d)}))
+        
+        yScale.domain([0,d3.max(dataForDomainY,function(d,i) { return +d})])
+          
+        itemLines = d3.select("svg").selectAll(".item-line").data(dataset,function(d) { return d.id})
+
+          //ENTER
+          itemLinesEnter = itemLines.enter().append("g").attr("class","item-line")
+
+
+          //Con la función classed añadimos una clase (true) o la quitamos (false) en función de si el país está o no en el array de países americanos
+          itemLinesEnter
+            .append("path")            
+            .classed("american",function(d) {
+              if (americanCountries.indexOf(d.id) != -1) {
+                return true;
+              } else {
+                return false;
+              }
+
+            })
+            .attr("d",function(d) {
+                return line(d.values);
+              });
+
+
+          itemLinesEnter
+            .append("title")
+            .text(function(d,i) {
+              return d.id
+            })
+
+
+          svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform","translate(" + paddingObject.left + "," + (paddingObject.top + heightGraph + 5) + ")")
+            .call(xAxisFunction)
+
+          svg.append("g")
+            .attr("class", "y axis")
+            .attr("transform","translate(" + (paddingObject.left ) + ","+paddingObject.top+")")
+            .call(yAxisFunction)          
+      });
+    </script>
+
+  </body>
+</html>
+

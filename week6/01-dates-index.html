@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">    
+    <title>Parsing dates</title>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>-->
+    <script src="d3.js" charset="utf-8"></script>
+  </head>
+
+
+  <body>
+    <h3>Parseo de fechas.</h3>
+    <p>Abre la consola para ver más información.</p>
+
+    <script type="text/javascript">
+      //Ejemplos de parseo y formateo de fechas
+      
+      //Esto es un string. No es ni un número ni una fecha todavía.
+      var testString = "1985";
+
+      //Ahora definimos un formato de fechas. En nuestro ejemplo YYYY
+      //Para ver todo el catálogo completo de formatos consulta:
+      //https://github.com/mbostock/d3/wiki/Time-Formatting
+      var dateFormat = d3.time.format("%Y");
+
+      //Ahora parseamos el string obteniendo un objeto fecha de Javascript
+      var testDate = dateFormat.parse(testString);
+      console.log(testDate);
+
+      //Cuando damos formato a un objeto date, obtenemos un string con dicho formato 
+      var testFormat = dateFormat(testDate);
+      console.log(testFormat);
+
+    </script>
+
+  </body>
+</html>
+

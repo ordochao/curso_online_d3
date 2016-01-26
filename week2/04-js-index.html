@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">    
+    <title>El título de mi página</title>
+
+    <!--
+      Esto es un comentario, no será interpretado por el navegador
+      Esta línea sirve para añadir un fichero CSS externo
+      <link rel="stylesheet" type="text/css" href="mystyle.css">
+      
+    -->
+
+  </head>
+
+
+  <body>
+
+    <h1 >Este es el ejemplo de Javascript. Lo interesante está en la consola</h1>
+    <h3>Observa los valores de las variables</h3>
+    <ul>
+      <li>unNumero</li>
+      <li>unTexto</li>
+      <li>unArray</li>
+      <li>unObjeto</li>
+      <li>unDataset</li>
+    </ul>
+
+    <script>
+      var unNumero = 5;
+
+      var unTexto = "Hola, soy un texto";
+
+      var unArray = ["Un array"," es una colección"," ordenada"," de objetos"];
+      //unArray.length muestra cuantos elementos tiene el array
+      //unArray[0] devuelve el primer elemento del array
+      //unArray[2] devuelve el tercer elemento del array
+
+      var unObjeto = {
+        nombre:"Un objeto",
+        objetivo:"Guardar información como una lista no ordenada de duplas clave - valor",
+        acceso:"para acceder a un objeto utilizamos la notación objeto.atributo ej: unObjeto.nombre"
+      };
+      //unObjeto.nombre devuelve el valor del objeto
+      //unObjeto["nombre"] es otra manera de escribir lo mismo
+
+      unDataset = [
+        {
+          country:"Argentina",
+          population:41.45
+        },
+        {
+          country:"Ecuador",
+          population:15.74
+        },
+        {
+          country:"Colombia",
+          population:48.32
+        },
+        {
+          country:"España",
+          population:46.77
+        },
+        {
+          country:"Bolivia",
+          population:10.27
+        },
+        {
+          country:"Perú",
+          population:30.82
+        }
+      ];
+
+      //Podemos tener arrays de objetos.
+      //Podemos tener arrays de arrays.
+      //Podemos tener objetos que tienen atributos que son arrays
+      //Podemos tener objetos que tienen atributos que son objetos
+      //Esto se puede cumplir recursivamente creando estructuras tan complejas como necesiten nuestros datos.
+
+    </script>
+
+  </body>
+</html>

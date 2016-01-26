@@ -1,0 +1,30 @@
+[
+  {
+    "estudiante":"Silvia Pérez",
+    "matemáticas":6,
+    "física":5,
+    "historia":4,
+    "geografía":7
+  },
+  {
+    "estudiante":"Fernando Ruiz",
+    "matemáticas":6,
+    "física":5,
+    "historia":10,
+    "geografía":6
+  },
+  {
+    "estudiante":"Álvaro Alonso",
+    "matemáticas":8,
+    "física":7,
+    "historia":7,
+    "geografía":8
+  },
+  {
+    "estudiante":"Antonio Martín",
+    "matemáticas":6,
+    "física":5,
+    "historia":5,
+    "geografía":4
+  }
+]

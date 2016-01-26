@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+   <element>
+      <estudiante>Silvia Pérez</estudiante>
+      <fisica>5</fisica>
+      <geografia>7</geografia>
+      <historia>4</historia>
+      <matematicas>6</matematicas>
+   </element>
+   <element>
+      <estudiante>Fernando Ruiz</estudiante>
+      <fisica>5</fisica>
+      <geografia>6</geografia>
+      <historia>10</historia>
+      <matematicas>6</matematicas>
+   </element>
+   <element>
+      <estudiante>Álvaro Alonso</estudiante>
+      <fisica>7</fisica>
+      <geografia>8</geografia>
+      <historia>7</historia>
+      <matematicas>8</matematicas>
+   </element>
+   <element>
+      <estudiante>Antonio Martín</estudiante>
+      <fisica>5</fisica>
+      <geografia>4</geografia>
+      <historia>5</historia>
+      <matematicas>6</matematicas>
+   </element>
+</root>

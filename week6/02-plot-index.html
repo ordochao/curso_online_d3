@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">    
+    <title>Emisiones de CO2</title>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>-->
+    <script src="d3.js" charset="utf-8"></script>
+
+    <style type="text/css">
+      body {
+        background-color: #FFF;
+        font-family: Helvetica;
+      }
+
+
+      .axis path,
+      .axis line {
+        fill:none;
+        stroke:black;
+        shape-rendering:crispEdges;
+      }
+
+      p {
+        font-size: 12px;
+        max-width: 600px;
+      }
+
+      .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+      }
+
+      circle {
+        fill:steelblue;
+      }
+
+      circle:hover {
+        fill:orange;        
+      }
+      
+    </style>
+
+  </head>
+
+
+  <body>
+
+    <h3>Emisiónes de CO2 en Estados Unidos</h3>
+    <p>Este gráfico muestra la evolución de emisiones de CO2. Este indicador procede del World Bank Data repository. Source: <a href="http://databank.worldbank.org/data/reports.aspx?source=2&country=&series=EN.ATM.CO2E.KT&period=#">World Bank</a> 2015.</p>
+
+    <script>
+      //CHANGED: Usamos una escala de tiempo en lugar de una escala lineal
+      var widthGraph = 600
+      var heightGraph = 400
+      
+
+      var paddingObject = {
+        top: 20,
+        left:120,
+        bottom:60,
+        right: 20,
+
+      }
+
+
+      var svg = d3.select("body")
+            .append("svg")
+            .attr("width",widthGraph + paddingObject.left + paddingObject.right)
+            .attr("height",heightGraph + paddingObject.top + paddingObject.bottom)
+
+      var dateFormat = d3.time.format("%Y")
+      //CHANGED: Usamos una escala de tiempo en lugar de una escala lineal
+      var xScale = d3.time.scale().range([0,widthGraph])
+
+      var yScale = d3.scale.linear().range([heightGraph,0])
+
+      //CHANGED: Utilizamos dateFormat para poner el formato de fecha con el año solo
+      var xAxisFunction = d3.svg.axis()
+            .scale(xScale)
+            .orient("bottom")
+            .ticks(15)
+            .tickFormat(function(d) {
+              return dateFormat(d)
+            });
+
+      var yAxisFunction = d3.svg.axis()
+          .scale(yScale)
+          .orient("left")
+          .tickFormat(function(d) {
+            return d.toLocaleString()
+          });
+
+      d3.csv("data/usa_emissions.csv", function(dataFromCSV) {
+
+          //ORDENAR DATOS
+          dataFromCSV.sort(function(a,b) {
+            return d3.ascending(a.year,b.year);
+          });
+
+          //CHANGED: El dominio lo hayamos parseando escalas de fechas
+          xScale.domain(d3.extent(dataFromCSV,function(d,i) { return dateFormat.parse(d.year)}))
+          //CHANGED: El eje Y lo unimos ahora a la variable emissions
+          yScale.domain(d3.extent(dataFromCSV,function(d,i) { return d.emissions}))
+
+          var items = d3.select("svg").selectAll("circle").data(dataFromCSV)          
+
+          //ENTER
+          items.enter().append("circle")
+            .attr("cx",function(d,i) {
+              //CHANGED: El dominio lo hayamos parseando escalas de fechas
+              return paddingObject.left + xScale(dateFormat.parse(d.year))
+            })
+            .attr("cy",function(d,i) {
+              return paddingObject.top + yScale(d.emissions)
+            })
+            .attr("r","6px")            
+            .append("title")
+            .text(function(d) {
+              //CHANGED: Hemos modificado el contenido del title a los nuevos gráficos
+              return  " En el año " + d.year + " EEUU emitió " + d.emissions.toLocaleString() + " de CO2."
+            });;
+
+
+            svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform","translate(" + paddingObject.left + "," + (paddingObject.top + heightGraph + 5) + ")")
+              .call(xAxisFunction)
+
+            svg.append("g")
+              .attr("class", "y axis")
+              .attr("transform","translate(" + (paddingObject.left ) + ","+paddingObject.top+")")
+              .call(yAxisFunction)
+
+
+
+      });
+    </script>
+
+  </body>
+</html>
+

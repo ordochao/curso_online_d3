@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">    
+    <title>El título de mi página</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+
+  </head>
+
+
+  <body>
+    
+
+    <script>      
+      //Primer dataset
+      var data1 = [
+        {
+          country:"Argentina",
+          population:41.45
+        },
+        {
+          country:"Ecuador",
+          population:15.74
+        },
+        {
+          country:"Colombia",
+          population:48.32
+        },
+        {
+          country:"España",
+          population:46.77
+        },
+        {
+          country:"Bolivia",
+          population:10.27
+        },
+        {
+          country:"Perú",
+          population:30.82
+        }
+      ];
+
+
+      //Primer binding
+      var items = d3.select("body").selectAll("p").data(data1);
+      
+      //ENTER
+      items.enter().append("p");
+
+      //EXIT
+      items.exit().remove();
+
+      //UPDATE
+      items.text(function(d) { 
+          return d.country + " tiene una población de " + d.population + " millones" 
+        });
+
+
+
+      //Segundo dataset
+      var data2 = [
+        {
+          country:"Argentina",
+          population:41.45
+        },
+        {
+          country:"Ecuador",
+          population:15.74
+        },
+        {
+          country:"Colombia",
+          population:48.32
+        },
+        {
+          country:"España",
+          //Hemos modificado este valor por un número no real
+          population:40
+        },
+        {
+          country:"Bolivia",
+          population:10.27
+        },
+        {
+          country:"Mexico",
+          //Hemos modificado este valor por un dato no real
+          population:122.3
+        }
+      ];
+
+
+      //Segundo binding
+      items = d3.select("body").selectAll("p").data(data2);
+      
+      //ENTER
+      items.enter().append("p");
+
+      //EXIT
+      items.exit().remove();
+
+      //UPDATE
+        items.text(function(d) { 
+          return d.country + " tiene una población de " + d.population + " millones" 
+        });
+      
+
+      
+    </script>
+      
+
+  </body>
+</html>

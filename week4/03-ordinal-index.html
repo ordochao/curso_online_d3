@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">    
+    <title>El título de mi página</title>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>-->
+    <script src="d3.js" charset="utf-8"></script>
+
+    <style>
+      body {
+        background-color: #EEE
+      }
+
+
+      svg {
+        background-color: #FFF
+      }
+    </style>
+
+  </head>
+
+
+  <body>
+
+    <h3>Generate svg objects with d3 using data binding</h3>
+
+    <svg style="width:320px;height:400px">
+    </svg>
+
+    <script>
+
+      /*La declaración de la etiqueta SVG es equivalente a 
+
+      var svg = d3.select("body")
+                  .append("svg")
+                  .attr("width",300)
+                  .attr("height",400)
+
+      */
+
+      var widthBars = d3.scale.linear().range([0,300])
+
+      var heightBars = d3.scale.ordinal().rangeBands([0,400])
+
+      d3.csv("data/better_life_index_data.csv", function(dataFromCSV) {
+
+          //ORDENAR DATOS
+          dataFromCSV.sort(function(a,b) {
+            return d3.descending(a.lifeSatisfaction,b.lifeSatisfaction);
+          });
+
+          widthBars.domain([0,d3.max(dataFromCSV,function(d,i) { return d.lifeSatisfaction})])
+          heightBars.domain(d3.range(dataFromCSV.length))
+
+          var items = d3.select("svg").selectAll("rect").data(dataFromCSV)          
+
+          //ENTER
+          items.enter().append("rect")
+            .attr("x",10)
+            .attr("y",function(d,i) {
+              return heightBars(i)
+            })
+            .attr("width",function(d) {
+              return widthBars(d.lifeSatisfaction)
+            })
+            .attr("height",heightBars.rangeBand());
+
+
+      });
+    </script>
+
+  </body>
+</html>
